@@ -1,0 +1,1671 @@
+---
+title: "Manuscript: Traits Related to Socialization (Conscientiousness, Agreeableness, and Emotional Resilience) Decrease in Early Adolescence: Comparing Northeastern Brazil to the US"
+output: html_document
+---
+
+# About the script
+- This a script containing code about the results section presented in the paper "Traits Related to Socialization (Conscientiousness, Agreeableness, and Emotional Resilience) Decrease in Early Adolescence: Comparing Northeastern Brazil to the US" (submitted). Code used for data cleaning procedures is not presented in this script. Data is not available to the public.
+
+- Outline with titles and subtitles is available.
+
+- Notes: SEL = Socioemotional learning; SD = Standard Deviation; SE = Standard Error; BR = Brasil; US = United States of America
+
+```{r packages, echo= FALSE}
+# LOAD PACKAGES
+library(tidyverse) # it includes dplyr and ggplot
+library(readxl)
+library(sjmisc)
+library(broom)
+library(formattable)
+library(stats)
+library(sjPlot)
+
+```
+
+```{r data, echo=FALSE}
+# LOAD DATA -----------------------------------------------------------------
+# For example purposes, the dataset object will be named as dt_sel_br (Brazilian data) and dt_sel_us (US data from Soto et al 2011). Data is not available for the public.
+
+dt_sel_br <- readRDS("data/dt_sel_br.RDS")
+
+dt_sel_us <- readRDS("data/dt_sel_us.RDS")
+
+```
+
+```{r scores, echo=FALSE}
+# CALCULATING SCORES
+# A local package called scores_v2_tests was applied to calculate average scores considering the availability criterion of item scores for each socio-emotional domain: Openness (SENNA_O_ori), Self-management (SENNA_C_ori), Engaging with others (SENNA_E_ori), Amity (SENNA_A_ori) and Emotional Resilience (SENNA_N_ori).
+```
+
+# Sample descriptives
+```{r descriptives}
+frq(dt_sel_br$gender)
+frq(dt_sel_br$age)
+frq(dt_sel_br$school_grade)
+
+dt_sel_br %>% 
+  group_by(gender) %>% 
+  frq(age)
+
+```
+
+# Average domain scores - Tables and Data Visualization
+
+## Building tables
+
+### Average domain scores for Brazilian data
+- Calculation of average domain scores, SDs e SEs for each age and gender group of the Brazilian sample
+```{r descriptives BR}
+# 10 - girls
+table_domains_girls_10 <- dt_sel_br %>% 
+  dplyr::select(age, gender, SENNA_C_ori, SENNA_A_ori,  SENNA_N_ori) %>% 
+  dplyr::filter(age == 10, gender == "Feminino") %>%
+  dplyr::summarise(
+    across(
+      starts_with("SENNA_"),
+      list(
+        mean = ~mean(., na.rm = TRUE),
+        sd = ~sd(., na.rm = TRUE),
+        se = ~sd(., na.rm = TRUE) / sqrt(length(.))
+        #n = ~n()
+      ),
+      .names = "{col}_{fn}"
+    )
+  ) %>%
+  pivot_longer(
+    cols = starts_with("SENNA_"),
+    names_to = "domain",
+    values_to = "score"
+  )
+
+table_domains_girls_10$gender <- "Girls"
+table_domains_girls_10$age <- "10y"
+
+# 10 - boys
+table_domains_boys_10 <- dt_sel_br %>% 
+  dplyr::select(age, gender, SENNA_C_ori, SENNA_A_ori,  SENNA_N_ori) %>% 
+  dplyr::filter(age == 10, gender == "Masculino") %>%
+  dplyr::summarise(
+    across(
+      starts_with("SENNA_"),
+      list(
+        mean = ~mean(., na.rm = TRUE),
+        sd = ~sd(., na.rm = TRUE),
+        se = ~sd(., na.rm = TRUE) / sqrt(length(.))
+        #n = ~n()
+      ),
+      .names = "{col}_{fn}"
+    )
+  ) %>%
+  pivot_longer(
+    cols = starts_with("SENNA_"),
+    names_to = "domain",
+    values_to = "score"
+  )
+
+table_domains_boys_10$gender <- "Boys"
+table_domains_boys_10$age <- "10y"
+
+# 11 - girls
+table_domains_girls_11 <- dt_sel_br %>% 
+  dplyr::select(age, gender, SENNA_C_ori, SENNA_A_ori,  SENNA_N_ori) %>% 
+  dplyr::filter(age == 11, gender == "Feminino") %>%
+  dplyr::summarise(
+    across(
+      starts_with("SENNA_"),
+      list(
+        mean = ~mean(., na.rm = TRUE),
+        sd = ~sd(., na.rm = TRUE),
+        se = ~sd(., na.rm = TRUE) / sqrt(length(.))
+        #n = ~n()
+      ),
+      .names = "{col}_{fn}"
+    )
+  ) %>%
+  pivot_longer(
+    cols = starts_with("SENNA_"),
+    names_to = "domain",
+    values_to = "score"
+  )
+
+table_domains_girls_11$gender <- "Girls"
+table_domains_girls_11$age <- "11y"
+
+# 11 - boys
+table_domains_boys_11 <- dt_sel_br %>% 
+  dplyr::select(age, gender, SENNA_C_ori, SENNA_A_ori,  SENNA_N_ori) %>% 
+  dplyr::filter(age == 11, gender == "Masculino") %>%
+  dplyr::summarise(
+    across(
+      starts_with("SENNA_"),
+      list(
+        mean = ~mean(., na.rm = TRUE),
+        sd = ~sd(., na.rm = TRUE),
+        se = ~sd(., na.rm = TRUE) / sqrt(length(.))
+        #n = ~n()
+      ),
+      .names = "{col}_{fn}"
+    )
+  ) %>%
+  pivot_longer(
+    cols = starts_with("SENNA_"),
+    names_to = "domain",
+    values_to = "score"
+  )
+
+table_domains_boys_11$gender <- "Boys"
+table_domains_boys_11$age <- "11y"
+
+# 12 - girls
+table_domains_girls_12 <- dt_sel_br %>% 
+  dplyr::select(age, gender, SENNA_C_ori, SENNA_A_ori,  SENNA_N_ori) %>% 
+  dplyr::filter(age == 12, gender == "Feminino") %>%
+  dplyr::summarise(
+    across(
+      starts_with("SENNA_"),
+      list(
+        mean = ~mean(., na.rm = TRUE),
+        sd = ~sd(., na.rm = TRUE),
+        se = ~sd(., na.rm = TRUE) / sqrt(length(.))
+        #n = ~n()
+      ),
+      .names = "{col}_{fn}"
+    )
+  ) %>%
+  pivot_longer(
+    cols = starts_with("SENNA_"),
+    names_to = "domain",
+    values_to = "score"
+  )
+
+table_domains_girls_12$gender <- "Girls"
+table_domains_girls_12$age <- "12y"
+
+# 12 - boys
+table_domains_boys_12 <- dt_sel_br %>% 
+  dplyr::select(age, gender, SENNA_C_ori, SENNA_A_ori,  SENNA_N_ori) %>% 
+  dplyr::filter(age == 12, gender == "Masculino") %>%
+  dplyr::summarise(
+    across(
+      starts_with("SENNA_"),
+      list(
+        mean = ~mean(., na.rm = TRUE),
+        sd = ~sd(., na.rm = TRUE),
+        se = ~sd(., na.rm = TRUE) / sqrt(length(.))
+        #n = ~n()
+      ),
+      .names = "{col}_{fn}"
+    )
+  ) %>%
+  pivot_longer(
+    cols = starts_with("SENNA_"),
+    names_to = "domain",
+    values_to = "score"
+  )
+
+table_domains_boys_12$gender <- "Boys"
+table_domains_boys_12$age <- "12y"
+
+# 13 - girls
+table_domains_girls_13 <- dt_sel_br %>% 
+  dplyr::select(age, gender, SENNA_C_ori, SENNA_A_ori,  SENNA_N_ori) %>% 
+  dplyr::filter(age == 13, gender == "Feminino") %>%
+  dplyr::summarise(
+    across(
+      starts_with("SENNA_"),
+      list(
+        mean = ~mean(., na.rm = TRUE),
+        sd = ~sd(., na.rm = TRUE),
+        se = ~sd(., na.rm = TRUE) / sqrt(length(.))
+        #n = ~n()
+      ),
+      .names = "{col}_{fn}"
+    )
+  ) %>%
+  pivot_longer(
+    cols = starts_with("SENNA_"),
+    names_to = "domain",
+    values_to = "score"
+  )
+
+table_domains_girls_13$gender <- "Girls"
+table_domains_girls_13$age <- "13y"
+
+# 13 - boys
+table_domains_boys_13 <- dt_sel_br %>% 
+  dplyr::select(age, gender, SENNA_C_ori, SENNA_A_ori,  SENNA_N_ori) %>% 
+  dplyr::filter(age == 13, gender == "Masculino") %>%
+  dplyr::summarise(
+    across(
+      starts_with("SENNA_"),
+      list(
+        mean = ~mean(., na.rm = TRUE),
+        sd = ~sd(., na.rm = TRUE),
+        se = ~sd(., na.rm = TRUE) / sqrt(length(.))
+        #n = ~n()
+      ),
+      .names = "{col}_{fn}"
+    )
+  ) %>%
+  pivot_longer(
+    cols = starts_with("SENNA_"),
+    names_to = "domain",
+    values_to = "score"
+  )
+
+table_domains_boys_13$gender <- "Boys"
+table_domains_boys_13$age <- "13y"
+
+# 14 - girls
+table_domains_girls_14 <- dt_sel_br %>% 
+  dplyr::select(age, gender, SENNA_C_ori, SENNA_A_ori,  SENNA_N_ori) %>% 
+  dplyr::filter(age == 14, gender == "Feminino") %>%
+  dplyr::summarise(
+    across(
+      starts_with("SENNA_"),
+      list(
+        mean = ~mean(., na.rm = TRUE),
+        sd = ~sd(., na.rm = TRUE),
+        se = ~sd(., na.rm = TRUE) / sqrt(length(.))
+        #n = ~n()
+      ),
+      .names = "{col}_{fn}"
+    )
+  ) %>%
+  pivot_longer(
+    cols = starts_with("SENNA_"),
+    names_to = "domain",
+    values_to = "score"
+  )
+
+table_domains_girls_14$gender <- "Girls"
+table_domains_girls_14$age <- "14y"
+
+# 14 - boys
+table_domains_boys_14 <- dt_sel_br %>% 
+  dplyr::select(age, gender, SENNA_C_ori, SENNA_A_ori,  SENNA_N_ori) %>% 
+  dplyr::filter(age == 14, gender == "Masculino") %>%
+  dplyr::summarise(
+    across(
+      starts_with("SENNA_"),
+      list(
+        mean = ~mean(., na.rm = TRUE),
+        sd = ~sd(., na.rm = TRUE),
+        se = ~sd(., na.rm = TRUE) / sqrt(length(.))
+        #n = ~n()
+      ),
+      .names = "{col}_{fn}"
+    )
+  ) %>%
+  pivot_longer(
+    cols = starts_with("SENNA_"),
+    names_to = "domain",
+    values_to = "score"
+  )
+
+table_domains_boys_14$gender <- "Boys"
+table_domains_boys_14$age <- "14y"
+
+# 15 - girls
+table_domains_girls_15 <- dt_sel_br %>% 
+  dplyr::select(age, gender, SENNA_C_ori, SENNA_A_ori,  SENNA_N_ori) %>% 
+  dplyr::filter(age == 15, gender == "Feminino") %>%
+  dplyr::summarise(
+    across(
+      starts_with("SENNA_"),
+      list(
+        mean = ~mean(., na.rm = TRUE),
+        sd = ~sd(., na.rm = TRUE),
+        se = ~sd(., na.rm = TRUE) / sqrt(length(.))
+        #n = ~n()
+      ),
+      .names = "{col}_{fn}"
+    )
+  ) %>%
+  pivot_longer(
+    cols = starts_with("SENNA_"),
+    names_to = "domain",
+    values_to = "score"
+  )
+
+table_domains_girls_15$gender <- "Girls"
+table_domains_girls_15$age <- "15y"
+
+# 15 - boys
+table_domains_boys_15 <- dt_sel_br %>%
+  dplyr::select(age, gender, SENNA_C_ori, SENNA_A_ori,  SENNA_N_ori) %>% 
+  dplyr::filter(age == 15, gender == "Masculino") %>%
+  dplyr::summarise(
+    across(
+      starts_with("SENNA_"),
+      list(
+        mean = ~mean(., na.rm = TRUE),
+        sd = ~sd(., na.rm = TRUE),
+        se = ~sd(., na.rm = TRUE) / sqrt(length(.))
+        #n = ~n()
+      ),
+      .names = "{col}_{fn}"
+    )
+  ) %>%
+  pivot_longer(
+    cols = starts_with("SENNA_"),
+    names_to = "domain",
+    values_to = "score"
+  )
+
+table_domains_boys_15$gender <- "Boys"
+table_domains_boys_15$age <- "15y"
+
+# Merge all table objects for a unified table with average scores, SD and SE per domain scores for each gender and age group 
+table_geral_gender <- rbind(
+  table_domains_girls_10, 
+  table_domains_boys_10,
+  table_domains_girls_11,
+  table_domains_boys_11,
+  table_domains_girls_12,
+  table_domains_boys_12,
+  table_domains_girls_13, 
+  table_domains_boys_13,
+  table_domains_girls_14,
+  table_domains_boys_14,
+  table_domains_girls_15,
+  table_domains_boys_15
+)
+
+remove(
+  table_domains_girls_10, 
+  table_domains_boys_10,
+  table_domains_girls_11,
+  table_domains_boys_11,
+  table_domains_girls_12,
+  table_domains_boys_12,
+  table_domains_girls_13, 
+  table_domains_boys_13,
+  table_domains_girls_14,
+  table_domains_boys_14,
+  table_domains_girls_15,
+  table_domains_boys_15
+)
+```
+
+### Average domain scores for US data
+- Calculation of average domain scores, SDs e SEs for each age and gender group of the US sample
+- For the dt_sel_us data, average scores and SDs were already calculated. Thus, only SEs were calculated below.
+```{r descriptives US}
+# SEs calculation
+dt_sel_us <- dt_sel_us %>% 
+  mutate(
+    SENNA_C_ori_se = C_sd / sqrt(N),
+    SENNA_A_ori_se = A_sd / sqrt(N),
+    SENNA_N_ori_se = N_sd / sqrt(N),
+  )
+
+# Rename US variables for merging BR and US data at the end of the chunk
+old_prefix_c <- "C_"
+new_prefix_c <- "SENNA_C_ori_"
+
+old_prefix_a <- "A_"
+new_prefix_a <- "SENNA_A_ori_"
+
+old_prefix_n <- "N_"
+new_prefix_n <- "SENNA_N_ori_"
+
+# Remove the old prefix and add the new prefix to data
+dt_sel_us <- dt_sel_us %>%
+  rename_with(~paste0(new_prefix_c, sub(old_prefix_c, "", .)), .cols = starts_with(old_prefix_c))
+
+dt_sel_us <- dt_sel_us %>%
+  rename_with(~paste0(new_prefix_a, sub(old_prefix_a, "", .)), .cols = starts_with(old_prefix_a))
+
+dt_sel_us <- dt_sel_us %>%
+  rename_with(~paste0(new_prefix_n, sub(old_prefix_n, "", .)), .cols = starts_with(old_prefix_n))
+
+# Organizing all US data objects into an unified table
+table_sel_us <- dt_sel_us %>% 
+  dplyr::select(
+    SENNA_C_ori_mean, 
+    SENNA_A_ori_mean, 
+    SENNA_N_ori_mean, 
+    SENNA_C_ori_sd, 
+    SENNA_A_ori_sd, 
+    SENNA_N_ori_sd, 
+    SENNA_C_ori_se,
+    SENNA_A_ori_se,
+    SENNA_N_ori_se,
+    gender, 
+    age
+  ) %>%
+  pivot_longer(
+    cols = c(
+    SENNA_C_ori_mean, 
+    SENNA_A_ori_mean, 
+    SENNA_N_ori_mean, 
+    SENNA_C_ori_sd, 
+    SENNA_A_ori_sd, 
+    SENNA_N_ori_sd, 
+    SENNA_C_ori_se,
+    SENNA_A_ori_se,
+    SENNA_N_ori_se,
+    ),
+    names_to = "domain",
+    values_to = "score"
+  )
+
+# Adding the test variable to identify US and BR data in final table
+table_sel_us$test <- "US_DATA"
+table_geral_gender$test <- "BR_DATA"
+
+# Adding "y" at the end of every age value in the US data to match BR data format 
+table_sel_us$age <- paste0(
+  table_sel_us$age, 
+  "y"
+)
+
+## Merging BR and US average scores, SDs and SEs value into an unified table
+table_scores <- bind_rows(
+  table_geral_gender, 
+  table_sel_us
+)
+
+## Merging BR and US average scores, SDs and SEs value into an unified table with girls information 
+table_final_g <- table_scores %>% 
+  filter(gender == "Girls") %>% 
+  pivot_wider(
+    names_from = domain,
+    values_from = score
+  ) %>% 
+  dplyr::select(test, 
+         age, 
+         matches("^SENNA_C"), 
+         matches("^SENNA_A"), 
+         matches("^SENNA_N"), 
+         -gender
+  )
+
+## Merging BR and US average scores, SDs and SEs value into an unified table with boys information 
+table_final_b <- table_scores %>% 
+  filter(gender == "Boys") %>% 
+  pivot_wider(
+    names_from = domain,
+    values_from = score
+  ) %>% 
+  dplyr::select(test, 
+         age, 
+         matches("^SENNA_C"), 
+         matches("^SENNA_A"), 
+         matches("^SENNA_N"), 
+         -gender
+  )
+
+```
+
+## Building graphs for the manuscript
+- It is important to note that Cohen's d information were inputted manually in each graph after saving them as PNG files.
+
+### Self-management graph (Figure 1a)
+-   Girls are on the left side and boys are on the right side
+
+```{r figure1a echo=FALSE, message=FALSE, warning=FALSE, fig.show="hold", out.width="50%"}
+
+# Girls graph
+title_c_girls <- glue(
+      "C_mean,
+      Girls"
+    )
+
+ggplot(
+  table_final_g, 
+  aes(x = age, y = SENNA_C_ori_mean, group = test, color = test)
+) +
+  geom_line(size = 0.9) +
+  geom_point() +
+  geom_errorbar(
+    aes(ymin = SENNA_C_ori_mean - SENNA_C_ori_se, ymax = SENNA_C_ori_mean + SENNA_C_ori_se),
+    width = 0.5,  # Adjust the width of the error bars
+    position = position_dodge(0.2)  # Adjust the dodge width if needed
+  ) +
+  scale_color_manual(values = c("darkgreen", "darkred")) +
+  scale_y_continuous(
+    limits = c(2.9, 3.9), 
+    breaks = seq(2.9, 3.9, by = 0.1)
+  ) +
+  labs(color = ' ') +
+  labs(title = title_c_girls) +
+  theme_hc() +
+  theme(
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank(),
+    axis.text.x = element_text(color = "black", size = 10, face = "bold"),
+    axis.text.y = element_text(color = "black", size = 10, face = "bold"),
+    plot.title = element_text(hjust = 0.5, size = 15, face = "bold")
+  )
+
+ggsave("SENNA_C_ori_mean_SE_girls_adj.png", width = 4, height = 8)
+
+# Boys graph
+title_c_boys <- glue(
+      "C_mean,
+      Boys"
+    )
+
+ggplot(
+  table_final_b, 
+  aes(x = age, y = SENNA_C_ori_mean, group = test, color = test)
+) +
+  geom_line(size = 0.9) +
+  geom_point() +
+  geom_errorbar(
+    aes(ymin = SENNA_C_ori_mean - SENNA_C_ori_se, ymax = SENNA_C_ori_mean + SENNA_C_ori_se),
+    width = 0.5,  # Adjust the width of the error bars
+    position = position_dodge(0.2)  # Adjust the dodge width if needed
+  ) +
+  scale_color_manual(values = c("darkgreen", "darkred")) +
+  scale_y_continuous(
+    limits = c(2.9, 3.9), 
+    breaks = seq(2.9, 3.9, by = 0.1)
+  ) +
+  labs(color = ' ') +
+  labs(title = title_c_boys) +
+  theme_hc() +
+  theme(
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank(),
+    axis.text.x = element_text(color = "black", size = 10, face = "bold"),
+    axis.text.y = element_text(color = "black", size = 10, face = "bold"),
+    plot.title = element_text(hjust = 0.5, size = 15, face = "bold")
+  )
+
+ggsave("SENNA_C_ori_mean_SE_boys_adj.png", width = 4, height = 8)
+
+```
+
+### Amity graph (Figura 1b)
+-   Girls are on the left side and boys are on the right side
+
+```{r figure1b echo=FALSE, message=FALSE, warning=FALSE, fig.show="hold", out.width="50%"}
+
+# Girls graph
+
+title_a_girls <- glue(
+      "A_mean,
+      Girls"
+    )
+
+ggplot(
+  table_final_g, 
+  aes(x = age, y = SENNA_A_ori_mean, group = test, color = test)
+) +
+  geom_line(size = 0.9) +
+  geom_point() +
+  geom_errorbar(
+    aes(ymin = SENNA_A_ori_mean - SENNA_A_ori_se, ymax = SENNA_A_ori_mean + SENNA_A_ori_se),
+    width = 0.5,  # Adjust the width of the error bars
+    position = position_dodge(0.2)  # Adjust the dodge width if needed
+  ) +
+  scale_color_manual(values = c("darkgreen", "darkred")) +
+  scale_y_continuous(
+    limits = c(3.2, 3.9), 
+    breaks = seq(3.2, 3.9, by = 0.1)
+  ) +
+  labs(color = ' ') +
+  labs(title = title_a_girls) +
+  theme_hc() +
+  theme(
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank(),
+    axis.text.x = element_text(color = "black", size = 10, face = "bold"),
+    axis.text.y = element_text(color = "black", size = 10, face = "bold"),
+    plot.title = element_text(hjust = 0.5, size = 15, face = "bold")
+  )
+
+ggsave("SENNA_A_ori_mean_SE_girls_adj.png", width = 4, height = 8)
+
+# Boys graph
+title_a_boys <- glue(
+      "A_mean,
+      Boys"
+    )
+
+ggplot(
+  table_final_b, 
+  aes(x = age, y = SENNA_A_ori_mean, group = test, color = test)
+) +
+  geom_line(size = 0.9) +
+  geom_point() +
+  geom_errorbar(
+    aes(ymin = SENNA_A_ori_mean - SENNA_A_ori_se, ymax = SENNA_A_ori_mean + SENNA_A_ori_se),
+    width = 0.5,  # Adjust the width of the error bars
+    position = position_dodge(0.2)  # Adjust the dodge width if needed
+  ) +
+  scale_color_manual(values = c("darkgreen", "darkred")) +
+  scale_y_continuous(
+    limits = c(3.2, 3.9), 
+    breaks = seq(3.2, 3.9, by = 0.1)
+  ) +
+  labs(color = ' ') +
+  labs(title = title_a_boys) +
+  theme_hc() +
+  theme(
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank(),
+    axis.text.x = element_text(color = "black", size = 10, face = "bold"),
+    axis.text.y = element_text(color = "black", size = 10, face = "bold"),
+    plot.title = element_text(hjust = 0.5, size = 15, face = "bold")
+  )
+
+ggsave("SENNA_A_ori_mean_SE_boys_adj.png", width = 4, height = 8)
+```
+
+### Emotional resilience graph (Figure 1c)
+-   Girls are on the left side and boys are on the right side
+
+```{r figure 1c echo=FALSE, message=FALSE, warning=FALSE, fig.show="hold", out.width="50%"}
+
+# Girls graph
+
+title_n_girls <- glue(
+      "N_mean,
+      Girls"
+    )
+
+ggplot(
+  table_final_g, 
+  aes(x = age, y = SENNA_N_ori_mean, group = test, color = test)
+) +
+  geom_line(size = 0.9) +
+  geom_point() +
+  geom_errorbar(
+    aes(ymin = SENNA_N_ori_mean - SENNA_N_ori_se, ymax = SENNA_N_ori_mean + SENNA_N_ori_se),
+    width = 0.5,  # Adjust the width of the error bars
+    position = position_dodge(0.2)  # Adjust the dodge width if needed
+  ) +
+  scale_color_manual(values = c("darkgreen", "darkred")) +
+  scale_y_continuous(
+    limits = c(2.6, 3.5), 
+    breaks = seq(2.6, 3.5, by = 0.1)
+  ) +
+  labs(color = ' ') +
+  labs(title = title_n_girls) +
+  theme_hc() +
+  theme(
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank(),
+    axis.text.x = element_text(color = "black", size = 10, face = "bold"),
+    axis.text.y = element_text(color = "black", size = 10, face = "bold"),
+    plot.title = element_text(hjust = 0.5, size = 15, face = "bold")
+  )
+
+ggsave("SENNA_N_ori_mean_SE_girls_adj.png", width = 4, height = 8)
+
+# Boys graph 
+
+title_n_boys <- glue(
+      "N_mean,
+      Boys"
+    )
+
+ggplot(
+  table_final_b, 
+  aes(x = age, y = SENNA_N_ori_mean, group = test, color = test)
+) +
+  geom_line(size = 0.9) +
+  geom_point() +
+  geom_errorbar(
+    aes(ymin = SENNA_N_ori_mean - SENNA_N_ori_se, ymax = SENNA_N_ori_mean + SENNA_N_ori_se),
+    width = 0.5,  # Adjust the width of the error bars
+    position = position_dodge(0.2)  # Adjust the dodge width if needed
+  ) +
+  scale_color_manual(values = c("darkgreen", "darkred")) +
+  scale_y_continuous(
+    limits = c(2.6, 3.5), 
+    breaks = seq(2.6, 3.5, by = 0.1)
+  ) +
+  labs(color = ' ') +
+  labs(title = title_n_boys) +
+  theme_hc() +
+  theme(
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank(),
+    axis.text.x = element_text(color = "black", size = 10, face = "bold"),
+    axis.text.y = element_text(color = "black", size = 10, face = "bold"),
+    plot.title = element_text(hjust = 0.5, size = 15, face = "bold")
+  )
+
+ggsave("SENNA_N_ori_mean_SE_boys_adj.png", width = 4, height = 8)
+
+```
+
+# T-tests
+
+## Comparison between years within same gender and same country 
+
+### Girls - BR
+
+```{r ttests-girls-BR}
+
+# Reorganizing dataset for t and magnitude tests
+
+dt_1110_f <- dt_sel_br %>% 
+  filter(age == 10 | age == 11) %>% 
+  filter(gender == "Feminino") 
+
+dt_1211_f <- dt_sel_br %>% 
+  filter(age == 11 | age == 12) %>% 
+  filter(gender == "Feminino") 
+
+dt_1312_f <- dt_sel_br %>% 
+  filter(age == 12 | age == 13) %>% 
+  filter(gender == "Feminino") 
+
+dt_1413_f <- dt_sel_br %>% 
+  filter(age == 13 | age == 14) %>% 
+  filter(gender == "Feminino") 
+
+dt_1514_f <- dt_sel_br %>% 
+  filter(age == 14 | age == 15) %>% 
+  filter(gender == "Feminino") 
+
+### T tests
+tab_t_c_1011_f <- t.test(SENNA_C_ori ~ age, data= dt_1110_f)
+tab_t_c_1211_f <- t.test(SENNA_C_ori ~ age, data= dt_1211_f)
+tab_t_c_1312_f <- t.test(SENNA_C_ori ~ age, data= dt_1312_f)
+tab_t_c_1413_f <- t.test(SENNA_C_ori ~ age, data= dt_1413_f)
+tab_t_c_1514_f <- t.test(SENNA_C_ori ~ age, data= dt_1514_f)
+
+tab_t_a_1011_f <- t.test(SENNA_A_ori ~ age, data= dt_1110_f)
+tab_t_a_1211_f <- t.test(SENNA_A_ori ~ age, data= dt_1211_f)
+tab_t_a_1312_f <- t.test(SENNA_A_ori ~ age, data= dt_1312_f)
+tab_t_a_1413_f <- t.test(SENNA_A_ori ~ age, data= dt_1413_f)
+tab_t_a_1514_f <- t.test(SENNA_A_ori ~ age, data= dt_1514_f)
+
+tab_t_n_1011_f <- t.test(SENNA_N_ori ~ age, data= dt_1110_f)
+tab_t_n_1211_f <- t.test(SENNA_N_ori ~ age, data= dt_1211_f)
+tab_t_n_1312_f <- t.test(SENNA_N_ori ~ age, data= dt_1312_f)
+tab_t_n_1413_f <- t.test(SENNA_N_ori ~ age, data= dt_1413_f)
+tab_t_n_1514_f <- t.test(SENNA_N_ori ~ age, data= dt_1514_f)
+
+# Building table to display results
+teste_name <- c("C: 10-11", "C: 11-12", "C: 12-13", "C: 13-14", "C: 14-15",
+                "A: 10-11", "A: 11-12", "A: 12-13", "A: 13-14", "A: 14-15",
+                "N: 10-11", "N: 11-12", "N: 12-13", "N: 13-14", "N: 14-15"
+                )
+
+tab_domain_f <- map_df(list(
+                            tab_t_c_1011_f,
+                            tab_t_c_1211_f,
+                            tab_t_c_1312_f,
+                            tab_t_c_1413_f,
+                            tab_t_c_1514_f,
+                            tab_t_a_1011_f,
+                            tab_t_a_1211_f,
+                            tab_t_a_1312_f,
+                            tab_t_a_1413_f,
+                            tab_t_a_1514_f,
+                            tab_t_n_1011_f,
+                            tab_t_n_1211_f,
+                            tab_t_n_1312_f,
+                            tab_t_n_1413_f,
+                            tab_t_n_1514_f
+                                          ), tidy)
+
+tab_domain_f <- tab_domain_f %>% 
+  dplyr::select(-method, -alternative)
+
+tab_domain_f <- round(tab_domain_f,3)
+tab_domain_f$domain_age <- teste_name
+
+tab_domain_f <- tab_domain_f[, c(9,1,2,3,4,5,6,7,8)]
+
+formattable::formattable(tab_domain_f)
+
+remove(tab_t_c_1011_f,
+       tab_t_c_1211_f,
+       tab_t_c_1312_f,
+       tab_t_c_1413_f,
+       tab_t_c_1514_f,
+       tab_t_a_1011_f,
+       tab_t_a_1211_f,
+       tab_t_a_1312_f,
+       tab_t_a_1413_f,
+       tab_t_a_1514_f,
+       tab_t_n_1011_f,
+       tab_t_n_1211_f,
+       tab_t_n_1312_f,
+       tab_t_n_1413_f,
+       tab_t_n_1514_f)
+
+```
+
+### Boys - BR
+
+```{r ttests-boys-BR}
+
+# Reorganizing dataset for t and magnitude tests
+
+dt_1110_m <- dt_sel_br %>% 
+  filter(age == 10 | age == 11) %>% 
+  filter(gender == "Masculino") 
+
+dt_1211_m <- dt_sel_br %>% 
+  filter(age == 11 | age == 12) %>% 
+  filter(gender == "Masculino") 
+
+dt_1312_m <- dt_sel_br %>% 
+  filter(age == 12 | age == 13) %>% 
+  filter(gender == "Masculino") 
+
+dt_1413_m <- dt_sel_br %>% 
+  filter(age == 13 | age == 14) %>% 
+  filter(gender == "Masculino") 
+
+dt_1514_m <- dt_sel_br %>% 
+  filter(age == 14 | age == 15) %>% 
+  filter(gender == "Masculino") 
+
+# T tests
+tab_t_c_1011_m <- t.test(SENNA_C_ori ~ age, data= dt_1110_m)
+tab_t_c_1211_m <- t.test(SENNA_C_ori ~ age, data= dt_1211_m)
+tab_t_c_1312_m <- t.test(SENNA_C_ori ~ age, data= dt_1312_m)
+tab_t_c_1413_m <- t.test(SENNA_C_ori ~ age, data= dt_1413_m)
+tab_t_c_1514_m <- t.test(SENNA_C_ori ~ age, data= dt_1514_m)
+
+tab_t_a_1011_m <- t.test(SENNA_A_ori ~ age, data= dt_1110_m)
+tab_t_a_1211_m <- t.test(SENNA_A_ori ~ age, data= dt_1211_m)
+tab_t_a_1312_m <- t.test(SENNA_A_ori ~ age, data= dt_1312_m)
+tab_t_a_1413_m <- t.test(SENNA_A_ori ~ age, data= dt_1413_m)
+tab_t_a_1514_m <- t.test(SENNA_A_ori ~ age, data= dt_1514_m)
+
+tab_t_n_1011_m <- t.test(SENNA_N_ori ~ age, data= dt_1110_m)
+tab_t_n_1211_m <- t.test(SENNA_N_ori ~ age, data= dt_1211_m)
+tab_t_n_1312_m <- t.test(SENNA_N_ori ~ age, data= dt_1312_m)
+tab_t_n_1413_m <- t.test(SENNA_N_ori ~ age, data= dt_1413_m)
+tab_t_n_1514_m <- t.test(SENNA_N_ori ~ age, data= dt_1514_m)
+
+# Building table to display results
+
+teste_name <- c("C: 10-11", "C: 11-12", "C: 12-13", "C: 13-14", "C: 14-15",
+                "A: 10-11", "A: 11-12", "A: 12-13", "A: 13-14", "A: 14-15",
+                "N: 10-11", "N: 11-12", "N: 12-13", "N: 13-14", "N: 14-15"
+                )
+
+tab_domain_m <- map_df(list(tab_t_c_1011_m,
+                            tab_t_c_1211_m,
+                            tab_t_c_1312_m,
+                            tab_t_c_1413_m,
+                            tab_t_c_1514_m,
+                            tab_t_a_1011_m,
+                            tab_t_a_1211_m,
+                            tab_t_a_1312_m,
+                            tab_t_a_1413_m,
+                            tab_t_a_1514_m,
+                            tab_t_n_1011_m,
+                            tab_t_n_1211_m,
+                            tab_t_n_1312_m,
+                            tab_t_n_1413_m,
+                            tab_t_n_1514_m
+                                          ), tidy)
+
+tab_domain_m <- tab_domain_m %>% 
+  dplyr::select(-method, -alternative)
+
+tab_domain_m <- round(tab_domain_m,3)
+tab_domain_m$domain_age <- teste_name
+
+tab_domain_m <- tab_domain_m[, c(9,1,2,3,4,5,6,7,8)]
+
+formattable::formattable(tab_domain_m)
+
+remove( tab_t_c_1011_m,
+        tab_t_c_1211_m,
+        tab_t_c_1312_m,
+        tab_t_c_1413_m,
+        tab_t_c_1514_m,
+        tab_t_a_1011_m,
+        tab_t_a_1211_m,
+        tab_t_a_1312_m,
+        tab_t_a_1413_m,
+        tab_t_a_1514_m,
+        tab_t_n_1011_m,
+        tab_t_n_1211_m,
+        tab_t_n_1312_m,
+        tab_t_n_1413_m,
+        tab_t_n_1514_m)
+
+
+```
+
+### Girls - USA
+
+```{r ttests-girls-US}
+# T tests
+
+# C
+tab_t_c_1011_f_us <- tsum.test(
+          mean.x=3.35, s.x=0.73, n.x=714,
+          mean.y=3.26, s.y=0.70, n.y=2191)
+
+tab_t_c_1112_f_us <- tsum.test(
+          mean.x=3.26, s.x=0.70	,n.x=2191,
+          mean.y=3.18, s.y=0.72, n.y=5435)
+
+tab_t_c_1213_f_us <- tsum.test(
+          mean.x=3.18, s.x=0.72	,n.x=5435,
+          mean.y=3.11, s.y=0.72, n.y=14031)
+
+tab_t_c_1314_f_us <- tsum.test(
+          mean.x=3.11, s.x=0.72	,n.x=14031,
+          mean.y=3.11	, s.y=0.70, n.y=23240)
+
+tab_t_c_1415_f_us <- tsum.test(
+          mean.x=3.11	, s.x=0.70, n.x=23240,
+          mean.y=3.14, s.y=0.70, n.y=32970)
+
+# A
+tab_t_a_1011_f_us <- tsum.test(
+          mean.x=3.70, s.x=0.71, n.x=714,
+          mean.y=3.63, s.y=0.70, n.y=2191)
+
+tab_t_a_1112_f_us <- tsum.test(
+          mean.x=3.63, s.x=0.70	,n.x=2191,
+          mean.y=3.55, s.y=0.72, n.y=5435)
+
+tab_t_a_1213_f_us <- tsum.test(
+          mean.x=3.55, s.x=0.72	,n.x=5435,
+          mean.y=3.50, s.y=0.72, n.y=14031)
+
+tab_t_a_1314_f_us <- tsum.test(
+          mean.x=3.50, s.x=0.72	,n.x=14031,
+          mean.y=3.53	, s.y=0.71, n.y=23240)
+
+tab_t_a_1415_f_us <- tsum.test(
+          mean.x=3.53	, s.x=0.71, n.x=23240,
+          mean.y=3.55, s.y=0.70, n.y=32970)
+
+# N
+tab_t_n_1011_f_us <- tsum.test(
+          mean.x=3.08, s.x=0.76, n.x=714,
+          mean.y=3.01, s.y=0.79, n.y=2191)
+
+tab_t_n_1112_f_us <- tsum.test(
+          mean.x=3.01, s.x=0.79	,n.x=2191,
+          mean.y=2.94, s.y=0.79, n.y=5435)
+
+tab_t_n_1213_f_us <- tsum.test(
+          mean.x=2.94, s.x=0.79	,n.x=5435,
+          mean.y=2.87, s.y=0.78, n.y=14031)
+
+tab_t_n_1314_f_us <- tsum.test(
+          mean.x=2.87, s.x=0.78	,n.x=14031,
+          mean.y=2.83	, s.y=0.78, n.y=23240)
+
+tab_t_n_1415_f_us <- tsum.test(
+          mean.x=2.83	, s.x=0.78, n.x=23240,
+          mean.y=2.80, s.y=0.77, n.y=32970)
+
+teste_name <- c("C: 10-11", "C: 11-12", "C: 12-13", "C: 13-14", "C: 14-15",
+                "A: 10-11", "A: 11-12", "A: 12-13", "A: 13-14", "A: 14-15",
+                "N: 10-11", "N: 11-12", "N: 12-13", "N: 13-14", "N: 14-15"
+                )
+
+tab_domain_f_us <- map_df(list(
+                            tab_t_c_1011_f_us,
+                            tab_t_c_1112_f_us,
+                            tab_t_c_1213_f_us,
+                            tab_t_c_1314_f_us,
+                            tab_t_c_1415_f_us,
+                            tab_t_a_1011_f_us,
+                            tab_t_a_1112_f_us,
+                            tab_t_a_1213_f_us,
+                            tab_t_a_1314_f_us,
+                            tab_t_a_1415_f_us,
+                            tab_t_n_1011_f_us,
+                            tab_t_n_1112_f_us,
+                            tab_t_n_1213_f_us,
+                            tab_t_n_1314_f_us,
+                            tab_t_n_1415_f_us
+                                          ), tidy)
+
+# Formatting t tests table
+tab_domain_f_us <- tab_domain_f_us %>% 
+  dplyr::select(-method, -alternative)
+
+tab_domain_f_us <- round(tab_domain_f_us,3)
+tab_domain_f_us$domain_age <- teste_name
+
+tab_domain_f_us <- tab_domain_f_us[, c(7,1,2,3,4,5,6)]
+
+remove( tab_t_c_1011_f_us,
+        tab_t_c_1112_f_us,
+        tab_t_c_1213_f_us,
+        tab_t_c_1314_f_us,
+        tab_t_c_1415_f_us,
+        tab_t_a_1011_f_us,
+        tab_t_a_1112_f_us,
+        tab_t_a_1213_f_us,
+        tab_t_a_1314_f_us,
+        tab_t_a_1415_f_us,
+        tab_t_n_1011_f_us,
+        tab_t_n_1112_f_us,
+        tab_t_n_1213_f_us,
+        tab_t_n_1314_f_us,
+        tab_t_n_1415_f_us)
+
+formattable::formattable(tab_domain_f_us)
+
+```
+
+### Boys - USA
+
+```{r ttests-boys-BR}
+# T tests
+
+# C
+tab_t_c_1011_b_us <- tsum.test(
+          mean.x=3.21, s.x=0.77, n.x=552 ,
+          mean.y=3.18, s.y=0.74, n.y=1352)
+
+tab_t_c_1112_b_us <- tsum.test(
+          mean.x=3.18, s.x=0.74	,n.x=1352,
+          mean.y=3.15, s.y=0.73, n.y=3052)
+
+tab_t_c_1213_b_us <- tsum.test(
+          mean.x=3.15, s.x=0.73	,n.x=3052,
+          mean.y=3.09, s.y=0.72, n.y=6824)
+
+tab_t_c_1314_b_us <- tsum.test(
+          mean.x=3.09, s.x=0.72	, n.x=6824 ,
+          mean.y=3.11	, s.y=0.72, n.y=11599)
+
+tab_t_c_1415_b_us <- tsum.test(
+          mean.x=3.11	, s.x=0.72, n.x=11599,
+          mean.y=3.11, s.y=0.70,  n.y=17887)
+
+# A
+tab_t_a_1011_b_us <- tsum.test(
+          mean.x=3.53, s.x=0.74, n.x=552 ,
+          mean.y=3.52, s.y=0.70, n.y=1352)
+
+tab_t_a_1112_b_us <- tsum.test(
+          mean.x=3.52, s.x=0.70	,n.x=1352,
+          mean.y=3.47, s.y=0.71, n.y=3052)
+
+tab_t_a_1213_b_us <- tsum.test(
+          mean.x=3.47, s.x=0.71	,n.x=3052,
+          mean.y=3.44, s.y=0.70, n.y=6824)
+
+tab_t_a_1314_b_us <- tsum.test(
+          mean.x=3.44, s.x=0.70	, n.x=6824 ,
+          mean.y=3.46	, s.y=0.69, n.y=11599)
+
+tab_t_a_1415_b_us <- tsum.test(
+          mean.x=3.46	, s.x=0.69, n.x=11599,
+          mean.y=3.47, s.y=0.69,  n.y=17887)
+
+# N
+tab_t_n_1011_b_us <- tsum.test(
+          mean.x=3.13, s.x=0.74, n.x=552 ,
+          mean.y=3.20, s.y=0.79, n.y=1352)
+
+tab_t_n_1112_b_us <- tsum.test(
+          mean.x=3.20, s.x=0.79	,n.x=1352,
+          mean.y=3.19, s.y=0.76, n.y=3052)
+
+tab_t_n_1213_b_us <- tsum.test(
+          mean.x=3.19, s.x=0.76	,n.x=3052,
+          mean.y=3.19, s.y=0.78, n.y=6824)
+
+tab_t_n_1314_b_us <- tsum.test(
+          mean.x=3.19, s.x=0.78	, n.x=6824 ,
+          mean.y=3.20	, s.y=0.79, n.y=11599)
+
+tab_t_n_1415_b_us <- tsum.test(
+          mean.x=3.20	, s.x=0.79, n.x=11599,
+          mean.y=3.19, s.y=0.79,  n.y=17887)
+
+teste_name <- c("C: 10-11", "C: 11-12", "C: 12-13", "C: 13-14", "C: 14-15",
+                "A: 10-11", "A: 11-12", "A: 12-13", "A: 13-14", "A: 14-15",
+                "N: 10-11", "N: 11-12", "N: 12-13", "N: 13-14", "N: 14-15"
+                )
+
+tab_domain_b_us <- map_df(list(
+                            tab_t_c_1011_b_us,
+                            tab_t_c_1112_b_us,
+                            tab_t_c_1213_b_us,
+                            tab_t_c_1314_b_us,
+                            tab_t_c_1415_b_us,
+                            tab_t_a_1011_b_us,
+                            tab_t_a_1112_b_us,
+                            tab_t_a_1213_b_us,
+                            tab_t_a_1314_b_us,
+                            tab_t_a_1415_b_us,
+                            tab_t_n_1011_b_us,
+                            tab_t_n_1112_b_us,
+                            tab_t_n_1213_b_us,
+                            tab_t_n_1314_b_us,
+                            tab_t_n_1415_b_us
+                                          ), tidy)
+
+# Formatting t tests table
+tab_domain_b_us <- tab_domain_b_us %>% 
+  dplyr::select(-method, -alternative)
+
+tab_domain_b_us <- round(tab_domain_b_us,3)
+tab_domain_b_us$domain_age <- teste_name
+
+tab_domain_b_us <- tab_domain_b_us[, c(7,1,2,3,4,5,6)]
+
+remove( tab_t_c_1011_b_us,
+        tab_t_c_1112_b_us,
+        tab_t_c_1213_b_us,
+        tab_t_c_1314_b_us,
+        tab_t_c_1415_b_us,
+        tab_t_a_1011_b_us,
+        tab_t_a_1112_b_us,
+        tab_t_a_1213_b_us,
+        tab_t_a_1314_b_us,
+        tab_t_a_1415_b_us,
+        tab_t_n_1011_b_us,
+        tab_t_n_1112_b_us,
+        tab_t_n_1213_b_us,
+        tab_t_n_1314_b_us,
+        tab_t_n_1415_b_us)
+
+formattable::formattable(tab_domain_b_us)
+
+```
+
+# Cohen's d 
+
+## Comparison between years within same gender and same country 
+
+-   Cohen's d was calculated with following formula: (mean(t+1)-mean(t))/mean(SD1, SD2)
+
+### Girls - BR and US data
+
+```{r cohensd-girls}
+
+table_final_g_d <- table_final_g %>% 
+  pivot_wider(
+    names_from = age,
+    names_sep = "_",
+    values_from = starts_with("SENNA_")
+  )
+
+table_final_g_d <- table_final_g_d %>% 
+  #C
+  mutate(
+    SENNA_C_cohen_d_11_10 = ((SENNA_C_ori_mean_11y-SENNA_C_ori_mean_10y)/
+                       ((SENNA_C_ori_sd_11y+SENNA_C_ori_sd_10y)/2)),
+    SENNA_C_cohen_d_12_11 = ((SENNA_C_ori_mean_12y-SENNA_C_ori_mean_11y)/
+                       ((SENNA_C_ori_sd_12y+SENNA_C_ori_sd_11y)/2)),                
+    SENNA_C_cohen_d_13_12 = ((SENNA_C_ori_mean_13y-SENNA_C_ori_mean_12y)/
+                       ((SENNA_C_ori_sd_13y+SENNA_C_ori_sd_12y)/2)),
+    SENNA_C_cohen_d_14_13 = ((SENNA_C_ori_mean_14y-SENNA_C_ori_mean_13y)/
+                       ((SENNA_C_ori_sd_14y+SENNA_C_ori_sd_13y)/2)),
+    SENNA_C_cohen_d_15_14 = ((SENNA_C_ori_mean_15y-SENNA_C_ori_mean_14y)/
+                       ((SENNA_C_ori_sd_15y+SENNA_C_ori_sd_14y)/2)),
+  #A
+    SENNA_A_cohen_d_11_10 = ((SENNA_A_ori_mean_11y-SENNA_A_ori_mean_10y)/
+                       ((SENNA_A_ori_sd_11y+SENNA_A_ori_sd_10y)/2)),
+    SENNA_A_cohen_d_12_11 = ((SENNA_A_ori_mean_12y-SENNA_A_ori_mean_11y)/
+                       ((SENNA_A_ori_sd_12y+SENNA_A_ori_sd_11y)/2)),                
+    SENNA_A_cohen_d_13_12 = ((SENNA_A_ori_mean_13y-SENNA_A_ori_mean_12y)/
+                       ((SENNA_A_ori_sd_13y+SENNA_A_ori_sd_12y)/2)),
+    SENNA_A_cohen_d_14_13 = ((SENNA_A_ori_mean_14y-SENNA_A_ori_mean_13y)/
+                       ((SENNA_A_ori_sd_14y+SENNA_A_ori_sd_13y)/2)),
+    SENNA_A_cohen_d_15_14 = ((SENNA_A_ori_mean_15y-SENNA_A_ori_mean_14y)/
+                       ((SENNA_A_ori_sd_15y+SENNA_A_ori_sd_14y)/2)),
+  #N
+    SENNA_N_cohen_d_11_10 = ((SENNA_N_ori_mean_11y-SENNA_N_ori_mean_10y)/
+                       ((SENNA_N_ori_sd_11y+SENNA_N_ori_sd_10y)/2)),
+    SENNA_N_cohen_d_12_11 = ((SENNA_N_ori_mean_12y-SENNA_N_ori_mean_11y)/
+                       ((SENNA_N_ori_sd_12y+SENNA_N_ori_sd_11y)/2)),                
+    SENNA_N_cohen_d_13_12 = ((SENNA_N_ori_mean_13y-SENNA_N_ori_mean_12y)/
+                       ((SENNA_N_ori_sd_13y+SENNA_N_ori_sd_12y)/2)),
+    SENNA_N_cohen_d_14_13 = ((SENNA_N_ori_mean_14y-SENNA_N_ori_mean_13y)/
+                       ((SENNA_N_ori_sd_14y+SENNA_N_ori_sd_13y)/2)),
+    SENNA_N_cohen_d_15_14 = ((SENNA_N_ori_mean_15y-SENNA_N_ori_mean_14y)/
+                       ((SENNA_N_ori_sd_15y+SENNA_N_ori_sd_14y)/2)),
+  )  %>% 
+  pivot_longer(
+    cols = starts_with("SENNA_"),
+    names_to = "domain",
+    values_to = "score") %>% 
+  dplyr::filter(stringr::str_detect(domain, 'cohen')) %>% 
+  mutate(score = round(score,2))
+
+```
+
+### Boys - BR and US data
+
+```{r r cohensd-boys}
+table_final_b_d <- table_final_b %>% 
+  pivot_wider(
+    names_from = age,
+    names_sep = "_",
+    values_from = starts_with("SENNA_")
+  )
+
+table_final_b_d <- table_final_b_d %>% 
+  #C
+  mutate(
+    SENNA_C_cohen_d_11_10 = ((SENNA_C_ori_mean_11y-SENNA_C_ori_mean_10y)/
+                       ((SENNA_C_ori_sd_11y+SENNA_C_ori_sd_10y)/2)),
+    SENNA_C_cohen_d_12_11 = ((SENNA_C_ori_mean_12y-SENNA_C_ori_mean_11y)/
+                       ((SENNA_C_ori_sd_12y+SENNA_C_ori_sd_11y)/2)),                
+    SENNA_C_cohen_d_13_12 = ((SENNA_C_ori_mean_13y-SENNA_C_ori_mean_12y)/
+                       ((SENNA_C_ori_sd_13y+SENNA_C_ori_sd_12y)/2)),
+    SENNA_C_cohen_d_14_13 = ((SENNA_C_ori_mean_14y-SENNA_C_ori_mean_13y)/
+                       ((SENNA_C_ori_sd_14y+SENNA_C_ori_sd_13y)/2)),
+    SENNA_C_cohen_d_15_14 = ((SENNA_C_ori_mean_15y-SENNA_C_ori_mean_14y)/
+                       ((SENNA_C_ori_sd_15y+SENNA_C_ori_sd_14y)/2)),
+  #A
+    SENNA_A_cohen_d_11_10 = ((SENNA_A_ori_mean_11y-SENNA_A_ori_mean_10y)/
+                       ((SENNA_A_ori_sd_11y+SENNA_A_ori_sd_10y)/2)),
+    SENNA_A_cohen_d_12_11 = ((SENNA_A_ori_mean_12y-SENNA_A_ori_mean_11y)/
+                       ((SENNA_A_ori_sd_12y+SENNA_A_ori_sd_11y)/2)),                
+    SENNA_A_cohen_d_13_12 = ((SENNA_A_ori_mean_13y-SENNA_A_ori_mean_12y)/
+                       ((SENNA_A_ori_sd_13y+SENNA_A_ori_sd_12y)/2)),
+    SENNA_A_cohen_d_14_13 = ((SENNA_A_ori_mean_14y-SENNA_A_ori_mean_13y)/
+                       ((SENNA_A_ori_sd_14y+SENNA_A_ori_sd_13y)/2)),
+    SENNA_A_cohen_d_15_14 = ((SENNA_A_ori_mean_15y-SENNA_A_ori_mean_14y)/
+                       ((SENNA_A_ori_sd_15y+SENNA_A_ori_sd_14y)/2)),
+  #N
+    SENNA_N_cohen_d_11_10 = ((SENNA_N_ori_mean_11y-SENNA_N_ori_mean_10y)/
+                       ((SENNA_N_ori_sd_11y+SENNA_N_ori_sd_10y)/2)),
+    SENNA_N_cohen_d_12_11 = ((SENNA_N_ori_mean_12y-SENNA_N_ori_mean_11y)/
+                       ((SENNA_N_ori_sd_12y+SENNA_N_ori_sd_11y)/2)),                
+    SENNA_N_cohen_d_13_12 = ((SENNA_N_ori_mean_13y-SENNA_N_ori_mean_12y)/
+                       ((SENNA_N_ori_sd_13y+SENNA_N_ori_sd_12y)/2)),
+    SENNA_N_cohen_d_14_13 = ((SENNA_N_ori_mean_14y-SENNA_N_ori_mean_13y)/
+                       ((SENNA_N_ori_sd_14y+SENNA_N_ori_sd_13y)/2)),
+    SENNA_N_cohen_d_15_14 = ((SENNA_N_ori_mean_15y-SENNA_N_ori_mean_14y)/
+                       ((SENNA_N_ori_sd_15y+SENNA_N_ori_sd_14y)/2)),
+  )  %>% 
+  pivot_longer(
+    cols = starts_with("SENNA_"),
+    names_to = "domain",
+    values_to = "score") %>% 
+  dplyr::filter(stringr::str_detect(domain, 'cohen')) %>% 
+  mutate(score = round(score,2))
+
+```
+
+# Regressions: linear and quadratic effects
+-   Regression analyses were performed to understand the effect of age in separate linear regressions, one for each gender. The age squared coefficient allows to investigate for curvilinear effects in the formula, and the original age coefficient allows to investigate the linear effects. Prior to squaring the age variable, age was standardized as z-score, which reflects an average age of 12.6 years in the sample and standard deviation of +-1.47 years.
+
+-   All predictors and predicted variables are standardized as z-scores, except for the gender variables which is coded 1 = boys and -1 = girls.
+
+    -   Regression formula: domain_gender <- age + age2 
+
+```{r regression-formatting}
+# Adjusting dataset for separate regressions
+dt_sel_br_f <- dt_sel_br %>% 
+  filter(gender == "Feminino")
+
+dt_sel_br_m <- dt_sel_br %>% 
+  filter(gender == "Masculino")
+```
+
+## Self-management
+
+### Girls
+
+```{r regression-selfmanagement-girls}
+fit_C_z_f <- lm(C_z ~ age_z + age_z_2, data = dt_sel_br_f)
+```
+
+```{r regression-selfmanagement-girls}
+tab_model(fit_C_z_f,
+          p.style = "scientific",
+          digits.p = 2,
+          show.std = "std",
+          show.se=TRUE
+          )
+```
+
+### Boys
+
+```{r regression-selfmanagement-boys}
+fit_C_z_m <- lm(C_z ~ age_z + age_z_2, data = dt_sel_br_m)
+```
+
+```{r regression-selfmanagement-boys}
+tab_model(fit_C_z_m,
+          p.style = "scientific",
+          digits.p = 2,
+          show.std = TRUE,
+          show.se=TRUE
+          )
+```
+
+## Emotional resilience
+
+### Girls
+
+```{r regression-emotionalres-girls}
+fit_N_z_f <- lm(N_z ~ age_z + age_z_2, data = dt_sel_br_f)
+```
+
+```{r regression-emotionalres-girls}
+tab_model(fit_N_z_f,
+          p.style = "scientific",
+          digits.p = 2,
+          show.std = TRUE,
+          show.se=TRUE
+          )
+```
+
+### Boys
+
+```{r regression-emotionalres-boys}
+fit_N_z_m <- lm(N_z ~ age_z + age_z_2, data = dt_sel_br_m)
+```
+
+```{r regression-emotionalres-boys}
+tab_model(fit_N_z_m,
+          p.style = "scientific",
+          digits.p = 2,
+          show.std = TRUE,
+          show.se=TRUE
+          )
+```
+
+## Amity
+
+### Girls
+
+```{r regression-amity-girls}
+fit_A_z_f <- lm(A_z ~ age_z + age_z_2, data = dt_sel_br_f)
+```
+
+```{r regression-amity-girls}
+tab_model(fit_A_z_f,
+          p.style = "scientific",
+          digits.p = 2,
+          show.std = TRUE,
+          show.se=TRUE
+          )
+```
+
+### Boys
+
+```{r regression-amity-boys}
+fit_A_z_m <- lm(A_z ~ age_z + age_z_2, data = dt_sel_br_m)
+```
+
+```{r regression-amity-boys}
+tab_model(fit_A_z_m,
+          p.style = "scientific",
+          digits.p = 2,
+          show.std = TRUE,
+          show.se=TRUE
+          )
+```
+
+# Correlations
+- Correlations were estimated using Pearson formula and pairwise information. Gender is coded Boys = 1 and Girls = -1. 
+
+```{r corr-vectors}
+v_age <- c("age_z", "age_z_2")
+v_gender <- c("sexo_n_z")
+v_age_gender <- c("age_z", "age_z_2", "sexo_n_z")
+v_sel <- c("SENNA_C_ori", "SENNA_A_ori", "SENNA_N_ori")
+
+
+```
+
+```{r datasets-age}
+# Organizing data for each age group
+dt_final_10 <- dt_sel_br %>% 
+  filter(age == "10")
+
+dt_final_11 <- dt_sel_br %>% 
+  filter(age == "11")
+
+dt_final_12 <- dt_sel_br %>% 
+  filter(age == "12")
+
+dt_final_13 <- dt_sel_br %>% 
+  filter(age == "13")
+
+dt_final_14 <- dt_sel_br %>% 
+  filter(age == "14")
+
+dt_final_15 <- dt_sel_br %>% 
+  filter(age == "15")
+
+```
+
+## Overall
+```{r correlations}
+psych::corr.test(dt_sel_br[,v_sel], 
+                 dt_sel_br[,v_age_gender], 
+                           use="pairwise"
+                        )
+```
+
+## Age 10
+```{r correlations}
+psych::corr.test(dt_final_10[,v_sel], 
+                                dt_final_10[,v_gender], 
+                                use="pairwise"
+                        )
+```
+
+## Age 11
+```{r correlations}
+psych::corr.test(dt_final_11[,v_sel], 
+                                dt_final_11[,v_gender], 
+                                use="pairwise"
+                        )
+```
+
+## Age 12
+```{r correlations}
+psych::corr.test(dt_final_12[,v_sel], 
+                                dt_final_12[,v_gender], 
+                                use="pairwise"
+                        )
+```
+
+## Age 13
+```{r correlations}
+psych::corr.test(dt_final_13[,v_sel], 
+                                dt_final_13[,v_gender], 
+                                use="pairwise"
+                        )
+```
+
+## Age 14
+```{r correlations}
+psych::corr.test(dt_final_14[,v_sel], 
+                                dt_final_14[,v_gender], 
+                                use="pairwise"
+                        )
+```
+
+## Age 15
+```{r correlations}
+psych::corr.test(dt_final_15[,v_sel], 
+                                dt_final_15[,v_gender], 
+                                use="pairwise"
+                        )
+```
+
+# Robustness checks with socioeconomic status variables (SES)
+-   Regression analyses were performed to understand the effect of age and report of receiving financial support from the government (-1 = No, 1 = Yes) and reported mothers' educational level (-1 = Did not complete High School, 1 = Did complete High School) in each domain for each gender. The age squared coefficient allows to investigate for curvilinear effects in the formula, and the original age coefficient allows to investigate the linear effects. Prior to squaring the age variable, age was standardized as z-score, which reflects an average age of 12.6 years in the sample and standard deviation of +-1.47 years.
+
+    -   Formula: domain <- age + age2 + SES + int(age X SES) + int(age2 X SES)
+
+## Reported mothers' education level
+
+### Self-management
+
+#### Girls
+```{r}
+fit_C_z_momeduc_f_rec2 <- lm(C_z ~ age_z + age_z_2 + mother_education_rec2 + age_z*mother_education_rec2 + age_z_2*mother_education_rec2, data = dt_sel_br_f)
+
+tab_model(fit_C_z_momeduc_f_rec2,
+          p.style = "scientific",
+          digits.p = 2,
+          show.std = "std",
+          show.se=TRUE
+          )
+
+```
+
+#### Boys
+```{r}
+fit_C_z_momeduc_m_rec2 <- lm(C_z ~ age_z + age_z_2 + mother_education_rec2 + age_z*mother_education_rec2 + age_z_2*mother_education_rec2, data = dt_sel_br_m)
+
+tab_model(fit_C_z_momeduc_m_rec2,
+          p.style = "scientific",
+          digits.p = 2,
+          show.std = "std",
+          show.se=TRUE
+          )
+
+```
+
+### Amity
+
+#### Girls
+```{r}
+fit_A_z_momeduc_f_rec2 <- lm(A_z ~ age_z + age_z_2 + mother_education_rec2 + age_z*mother_education_rec2 + age_z_2*mother_education_rec2, data = dt_sel_br_f)
+
+tab_model(fit_A_z_momeduc_f_rec2,
+          p.style = "scientific",
+          digits.p = 2,
+          show.std = "std",
+          show.se=TRUE
+          )
+
+```
+
+#### Boys
+```{r}
+fit_A_z_momeduc_m_rec2 <- lm(A_z ~ age_z + age_z_2 + mother_education_rec2 + age_z*mother_education_rec2 + age_z_2*mother_education_rec2, data = dt_sel_br_m)
+
+tab_model(fit_A_z_momeduc_m_rec2,
+          p.style = "scientific",
+          digits.p = 2,
+          show.std = "std",
+          show.se=TRUE
+          )
+
+```
+
+### Emotional Resilience
+
+#### Girls
+```{r}
+fit_N_z_momeduc_f_rec2 <- lm(N_z ~ age_z + age_z_2 + mother_education_rec2 + age_z*mother_education_rec2 + age_z_2*mother_education_rec2, data = dt_sel_br_f)
+
+tab_model(fit_N_z_momeduc_f_rec2,
+          p.style = "scientific",
+          digits.p = 2,
+          show.std = "std",
+          show.se=TRUE
+          )
+
+```
+
+#### Boys
+```{r}
+fit_N_z_momeduc_m_rec2 <- lm(N_z ~ age_z + age_z_2 + mother_education_rec2 + age_z*mother_education_rec2 + age_z_2*mother_education_rec2, data = dt_sel_br_m)
+
+tab_model(fit_N_z_momeduc_m_rec2,
+          p.style = "scientific",
+          digits.p = 2,
+          show.std = "std",
+          show.se=TRUE
+          )
+
+```
+
+## Reported financial governmental support 
+
+### Self-management
+
+#### Girls
+```{r}
+fit_C_z_sup_f <- lm(C_z ~ age_z + age_z_2 + sup_z + age_z*sup_z + age_z_2*sup_z, data = dt_sel_br_f)
+
+tab_model(fit_C_z_sup_f,
+          p.style = "scientific",
+          digits.p = 2,
+          show.std = "std",
+          show.se=TRUE
+          )
+
+```
+
+#### Boys
+```{r}
+fit_C_z_sup_m <- lm(C_z ~ age_z + age_z_2 + sup_z + age_z*sup_z + age_z_2*sup_z, data = dt_sel_br_m)
+
+tab_model(fit_C_z_sup_m,
+          p.style = "scientific",
+          digits.p = 2,
+          show.std = "std",
+          show.se=TRUE
+          )
+
+```
+
+### Amity
+
+#### Girls
+```{r}
+fit_A_z_sup_f <- lm(A_z ~ age_z + age_z_2 + sup_z + age_z*sup_z + age_z_2*sup_z, data = dt_sel_br_f)
+
+tab_model(fit_A_z_sup_f,
+          p.style = "scientific",
+          digits.p = 2,
+          show.std = "std",
+          show.se=TRUE
+          )
+
+```
+
+#### Boys
+```{r}
+fit_A_z_sup_m <- lm(A_z ~ age_z + age_z_2 + sup_z + age_z*sup_z + age_z_2*sup_z, data = dt_sel_br_m)
+
+tab_model(fit_A_z_sup_m,
+          p.style = "scientific",
+          digits.p = 2,
+          show.std = "std",
+          show.se=TRUE
+          )
+
+```
+
+### Emotional Resilience 
+
+#### Girls
+```{r}
+fit_N_z_sup_f <- lm(N_z ~ age_z + age_z_2 + sup_z + age_z*sup_z + age_z_2*sup_z, data = dt_sel_br_f)
+
+tab_model(fit_N_z_sup_f,
+          p.style = "scientific",
+          digits.p = 2,
+          show.std = "std",
+          show.se=TRUE
+          )
+
+```
+
+#### Boys
+```{r}
+fit_N_z_sup_m <- lm(N_z ~ age_z + age_z_2 + sup_z + age_z*sup_z + age_z_2*sup_z, data = dt_sel_br_m)
+
+tab_model(fit_N_z_sup_m,
+          p.style = "scientific",
+          digits.p = 2,
+          show.std = "std",
+          show.se=TRUE
+          )
+
+```
